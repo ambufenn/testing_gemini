@@ -1,18 +1,37 @@
-import os
+import streamlit as st
 import google.generativeai as genai
 from dotenv import load_dotenv
+import os
 
+# Load API key
 load_dotenv()
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
+# Inisialisasi model Gemini
 model = genai.GenerativeModel("gemini-pro")
-chat = model.start_chat()
 
-print("🤖 Gemini Chatbot. Ketik 'exit' untuk keluar.")
+# Streamlit App
+st.set_page_config(page_title="Gemini Chatbot", page_icon="🤖")
+st.title("🤖 Gemini Chatbot by Streamlit")
 
-while True:
-    user_input = input("Kamu: ")
-    if user_input.lower() == "exit":
-        break
-    response = chat.send_message(user_input)
-    print("Gemini:", response.text)
+# Session state untuk menyimpan chat
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
+    st.session_state.chat = model.start_chat(history=[])
+
+# Form input
+with st.form("chat_form", clear_on_submit=True):
+    user_input = st.text_input("Ketik pesan:")
+    submitted = st.form_submit_button("Kirim")
+
+# Proses input
+if submitted and user_input:
+    # Tambahkan pesan ke chat history
+    st.session_state.chat_history.append(("🧑 Kamu", user_input))
+    response = st.session_state.chat.send_message(user_input)
+    st.session_state.chat_history.append(("🤖 Gemini", response.text))
+
+# Tampilkan chat history
+for role, msg in st.session_state.chat_history:
+    with st.chat_message(role.split()[0]):
+        st.markdown(msg)
