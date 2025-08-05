@@ -1,14 +1,12 @@
 import streamlit as st
 import google.generativeai as genai
-from dotenv import load_dotenv
 import os
 
-
-# Ambil API key dari secrets Streamlit
+# Konfigurasi API key dari secrets Streamlit
 genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
 
-model = genai.GenerativeModel("gemini-pro")
-
+# Pilih model (boleh diganti: "gemini-1.5-pro" atau "gemini-1.5-flash")
+model = genai.GenerativeModel("gemini-1.5-flash")
 
 # Streamlit App
 st.set_page_config(page_title="Gemini Chatbot", page_icon="🤖")
@@ -26,9 +24,13 @@ with st.form("chat_form", clear_on_submit=True):
 
 # Proses input
 if submitted and user_input:
-    # Tambahkan pesan ke chat history
+    # Tambahkan pesan pengguna
     st.session_state.chat_history.append(("🧑 Kamu", user_input))
+
+    # Kirim ke Gemini
     response = st.session_state.chat.send_message(user_input)
+
+    # Tambahkan respons ke history
     st.session_state.chat_history.append(("🤖 Gemini", response.text))
 
 # Tampilkan chat history
