@@ -3,12 +3,12 @@ import google.generativeai as genai
 from dotenv import load_dotenv
 import os
 
-# Load API key
-load_dotenv()
-genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
-# Inisialisasi model Gemini
+# Ambil API key dari secrets Streamlit
+genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
+
 model = genai.GenerativeModel("gemini-pro")
+
 
 # Streamlit App
 st.set_page_config(page_title="Gemini Chatbot", page_icon="🤖")
